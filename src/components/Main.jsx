@@ -26,33 +26,33 @@ const Main = () => {
 
     // row
     const rowCheck = !arr
-      .map((num) => values.map((row) => row.includes(num)))
-      .find((i) => !i);
+      .map((num) => values.map((row) => row.includes(num)).includes(false))
+      .includes(true);
 
     //col
     const colCheck = !arr
       .map((num) =>
         arr
-          .map((index) => values.filter((row) => row[index - 1])) // reshape
-          .map((newRow) => newRow.includes(num))
+          .map((re, index) => values.map((row) => row[index]).includes(num))
+          .includes(false)
       )
-      .find((i) => !i);
+      .includes(true);
 
     // 3x3
     let boxCheck = true;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 9; i += 3) {
       const threeRows = values.slice(i, i + 3);
-      for (let j = 0; j < 3; j++) {
-        const box = threeRows.splice(j, j + 3).flat();
-        const valid = !arr.map((num) => box.includes(num)).find((i) => !i);
+      for (let j = 0; j < 9; j += 3) {
+        const box = threeRows.map((row) => row.slice(j, j + 3)).flat();
+        const valid = !arr.map((num) => box.includes(num)).includes(false);
         if (!valid) {
           boxCheck = false;
         }
       }
     }
 
-    rowCheck && colCheck && boxCheck && setResult(true);
+    rowCheck && colCheck && boxCheck ? setResult(true) : setResult(false);
   };
 
   useEffect(
@@ -90,7 +90,9 @@ const Main = () => {
                               event.target.value <= 9) ||
                             event.target.value === ""
                           ) {
-                            val[indexRow][indexCol] = event.target.value;
+                            val[indexRow][indexCol] = Number(
+                              event.target.value
+                            );
                             setValues(val);
                           }
                         }}
@@ -103,7 +105,9 @@ const Main = () => {
           ))}
         </tbody>
       </Table>
-      <Alert variant="primary">{result ? "Success" : "Try again"}</Alert>
+      <Alert variant={result ? "success" : "warning"}>
+        {result ? "Success" : "Try again"}
+      </Alert>
     </Container>
   );
 };
